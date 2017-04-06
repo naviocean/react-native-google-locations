@@ -1,6 +1,7 @@
 package com.timhagn.rngloc;
 
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -27,6 +28,8 @@ public class RNGLocationModule extends ReactContextBaseJavaModule implements Loc
     private Location mLastLocation;
     // The Google Play Services Location Provider
     private LocationProvider mLocationProvider;
+
+    private LocationManager locationManager;
     //The React Native Context
     ReactApplicationContext mReactContext;
 
@@ -111,12 +114,24 @@ public class RNGLocationModule extends ReactContextBaseJavaModule implements Loc
         }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        // If Location Provider is connected, disconnect.
-        if (mLocationProvider != null && mLocationProvider.connected) {
-            mLocationProvider.disconnect();
+    @ReactMethod
+    public void stopLocation() {
+        try {
+            locationManager.removeUpdates(mLocationListener);
+            if (mLocationProvider != null && mLocationProvider.connected) {
+                mLocationProvider.disconnect();
+            }
+            Log.i(TAG, "Location service disabled.");
+        }catch(Exception e) {
+            e.printStackTrace();
         }
     }
+    // @Override
+    // protected void finalize() throws Throwable {
+    //     super.finalize();
+    //     // If Location Provider is connected, disconnect.
+    //     if (mLocationProvider != null && mLocationProvider.connected) {
+    //         mLocationProvider.disconnect();
+    //     }
+    // }
 }
